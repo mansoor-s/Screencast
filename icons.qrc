@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/video.png</file>
+        <file>icons/speaker.png</file>
+        <file>icons/micphone.png</file>
+        <file>icons/harddisk.png</file>
+        <file>icons/gear.png</file>
+        <file>icons/camera.png</file>
+        <file>icons/button_black_stop.png</file>
+        <file>icons/button_black_play.png</file>
+        <file>icons/help_black.png</file>
+        <file>icons/Monitor_256.png</file>
+        <file>icons/downArrow.png</file>
+    </qresource>
+</RCC>
