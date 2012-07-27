@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-
+#include <QFile>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -28,6 +28,18 @@ MainWindow::MainWindow(QWidget *parent) :
                             currGeometry.width(),
                             currGeometry.height());
 
+    //set default hotkey to F10
+    this->ui->recordHotkey->setCurrentIndex(4);
+
+    //create system tray icon
+    this->systrayIcon = new QSystemTrayIcon(this);
+    QIcon icon(":/icons/icons/logo32.png");
+    this->systrayIcon->setIcon(icon);
+    this->systrayIcon->show();
+
+
+    Countdown *countdown = new Countdown();
+    countdown->startCountdown(5);
 }
 
 MainWindow::~MainWindow()
@@ -41,11 +53,11 @@ void MainWindow::rollInBottom()
 
     QPropertyAnimation *animationMin = new QPropertyAnimation(this, "minimumHeight");
     QPropertyAnimation *animationMax = new QPropertyAnimation(this, "maximumHeight");
-    animationMin->setDuration(250);
+    animationMin->setDuration(75);
     animationMin->setStartValue(geometry.height());
     animationMin->setEndValue(this->defaultHeight);
 
-    animationMax->setDuration(250);
+    animationMax->setDuration(75);
     animationMax->setStartValue(geometry.height());
     animationMax->setEndValue(this->defaultHeight);
 
@@ -59,11 +71,11 @@ void MainWindow::rollOutBottom(int height)
 
     QPropertyAnimation *animationMin = new QPropertyAnimation(this, "minimumHeight");
     QPropertyAnimation *animationMax = new QPropertyAnimation(this, "maximumHeight");
-    animationMin->setDuration(250);
+    animationMin->setDuration(75);
     animationMin->setStartValue(geometry.height());
     animationMin->setEndValue(height);
 
-    animationMax->setDuration(250);
+    animationMax->setDuration(75);
     animationMax->setStartValue(geometry.height());
     animationMax->setEndValue(height);
 
@@ -80,11 +92,11 @@ void MainWindow::rollInRight()
 
     QPropertyAnimation *animationMin = new QPropertyAnimation(this, "minimumWidth");
     QPropertyAnimation *animationMax = new QPropertyAnimation(this, "maximumWidth");
-    animationMin->setDuration(250);
+    animationMin->setDuration(75);
     animationMin->setStartValue(geometry.width());
     animationMin->setEndValue(this->defaultWidth);
 
-    animationMax->setDuration(250);
+    animationMax->setDuration(75);
     animationMax->setStartValue(geometry.width());
     animationMax->setEndValue(this->defaultWidth);
 
@@ -110,11 +122,11 @@ void MainWindow::rollOutRight(int width)
 
     QPropertyAnimation *animationMin = new QPropertyAnimation(this, "minimumWidth");
     QPropertyAnimation *animationMax = new QPropertyAnimation(this, "maximumWidth");
-    animationMin->setDuration(250);
+    animationMin->setDuration(75);
     animationMin->setStartValue(geometry.width());
     animationMin->setEndValue(width);
 
-    animationMax->setDuration(250);
+    animationMax->setDuration(75);
     animationMax->setStartValue(geometry.width());
     animationMax->setEndValue(width);
 

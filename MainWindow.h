@@ -6,6 +6,9 @@
 #include <QGraphicsPixmapItem>
 #include <QPropertyAnimation>
 #include <QDesktopWidget>
+#include <QSystemTrayIcon>
+
+#include "Countdown.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,7 +23,7 @@ public:
     ~MainWindow();
 
     void rollInBottom();
-    void rollOutBottom(int height = 450);
+    void rollOutBottom(int height = 470);
     void rollOutRight(int width = 950);
     void rollInRight();
     void setindicator(int pos);
@@ -47,6 +50,8 @@ private:
     bool rolledOutRight;
 
     void buttonClicked(int pos);
+
+    QSystemTrayIcon *systrayIcon;
 };
 
 #endif // MAINWINDOW_H

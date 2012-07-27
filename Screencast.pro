@@ -11,11 +11,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    Recorder.cpp \
+    Countdown.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    Recorder.h \
+    Countdown.h
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+    cowntdown.ui
 
 RESOURCES += \
     icons.qrc
