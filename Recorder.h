@@ -1,17 +1,23 @@
 #ifndef RECORDER_H
 #define RECORDER_H
 
-#include <QThread>
+#include <QProcess>
 
-class Recorder : public QThread
+#include "RecordInfo.h"
+
+
+class Recorder
 {
-    Q_OBJECT
 public:
-    explicit Recorder(QObject *parent = 0);
-    
-signals:
-    
-public slots:
+    explicit Recorder();
+    ~Recorder();
+
+    void startRecording(RecordInfo info);
+    void stopRecording();
+
+
+private:
+    QProcess *ffmpeg;
     
 };
 

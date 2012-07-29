@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-#include <QFile>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -21,12 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->rolledOutRight = false;
 
-    QRect screenGeometry = QDesktopWidget().availableGeometry();
-    QRect currGeometry = frameGeometry();
-    setGeometry(screenGeometry.width() / 2 - currGeometry.width() / 2,
-                            (screenGeometry.height() / 2 - currGeometry.height() / 2) - 100,
-                            currGeometry.width(),
-                            currGeometry.height());
+    this->recordingStarted = false;
 
     //set default hotkey to F10
     this->ui->recordHotkey->setCurrentIndex(4);
@@ -35,11 +29,33 @@ MainWindow::MainWindow(QWidget *parent) :
     this->systrayIcon = new QSystemTrayIcon(this);
     QIcon icon(":/icons/icons/logo32.png");
     this->systrayIcon->setIcon(icon);
-    this->systrayIcon->show();
+
+    connect(systrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), SLOT(sysTrayActivated(QSystemTrayIcon::ActivationReason)));
 
 
-    Countdown *countdown = new Countdown();
-    countdown->startCountdown(5);
+    countdown = new Countdown();
+    connect(countdown, SIGNAL(countdownFinished()), SLOT(countdownFinished()));
+
+
+    //Setup default global start/stop recording shortcut
+    globalShortcut = new QxtGlobalShortcut(this);
+    connect(globalShortcut, SIGNAL(activated()), SLOT(globalShortcutActivated()));
+    globalShortcut->setShortcut(QKeySequence("F10"));
+
+    connect(this->ui->recordHotkey, SIGNAL(currentIndexChanged(QString)), SLOT(globalShortcutChanged(QString)));
+
+    //be able to stop countdown
+    connect(this, SIGNAL(stopCountdown()), countdown, SLOT(stop()));
+
+    //start/stop recording
+    recorder = new Recorder();
+
+    outputFileName = "Screencast-" + QDateTime::currentDateTime().toString("yyyy-MMM-dd-h-m");
+
+    outputDirectory = QDir::homePath();
+    this->ui->outputDirlabel->setText(outputDirectory);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -113,6 +129,76 @@ void MainWindow::toggleRight()
     }
 }
 
+void MainWindow::sysTrayActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if (reason == QSystemTrayIcon::Trigger) {
+        if (this->isVisible()) {
+            this->hide();
+        } else {
+            //we are recording and we want to end it.
+            this->show();
+            this->systrayIcon->hide();
+
+            if (recordingStarted) {
+                recorder->stopRecording();
+                recordingStarted = false;
+
+            }
+        }
+    }
+
+}
+
+//start recording
+void MainWindow::countdownFinished()
+{
+    qDebug() << "countdown finished!";
+    //emit startRecording();
+
+}
+
+void MainWindow::globalShortcutActivated()
+{
+    if (this->recordingStarted == true) {
+        //incase it is still counting down and actual recording has not yet started
+        emit stopCountdown();
+        emit stopRecording();
+        return;
+    }
+
+
+    this->recordingStarted = true;
+    this->hide();
+    this->systrayIcon->show();
+    this->countdown->startCountdown(this->ui->recordingStartDelay->value());
+
+}
+
+//Recorder is letting us know that ffmpeg has stoped
+void MainWindow::recordingFinished()
+{
+    qDebug() << "recording finished!";
+    this->recordingStarted = false;
+    this->show();
+    this->systrayIcon->hide();
+}
+
+void MainWindow::setOutputDirectory()
+{
+    outputDirectory = QFileDialog::getExistingDirectory(this, "Choose output directory", QDir::homePath(), QFileDialog::ShowDirsOnly);
+
+    this->ui->outputDirlabel->setText(outputDirectory);
+}
+
+
+//change the shortcut we are listening on
+void MainWindow::globalShortcutChanged(const QString &shortcut)
+{
+    globalShortcut->setShortcut(QKeySequence(shortcut));
+}
+
+
+
 
 void MainWindow::rollOutRight(int width)
 {
@@ -165,6 +251,37 @@ void MainWindow::setindicator(int pos)
 }
 
 
+/*
+    make the main window visible and center it on the screen
+*/
+void MainWindow::show()
+{
+    this->setVisible(true);
+    QRect screenGeometry = QDesktopWidget().availableGeometry();
+    QRect currGeometry = frameGeometry();
+    setGeometry(screenGeometry.width() / 2 - currGeometry.width() / 2,
+                            (screenGeometry.height() / 2 - currGeometry.height() / 2) - 100,
+                            currGeometry.width(),
+                currGeometry.height());
+}
+
+QString MainWindow::getScreenResolution()
+{
+    QProcess proc;
+    QStringList args;
+    args << "-c";
+    args << "xrandr | grep '*' | awk '{print $1}'";
+    //args << "xwininfo -root | grep 'geometry'| awk '{print $2;}'";
+    proc.start("/bin/sh", args);
+
+    proc.waitForFinished();
+
+    return proc.readAll().trimmed();
+}
+
+
+
+
 void MainWindow::showDisplayPage()
 {
     buttonClicked(0);
@@ -197,6 +314,9 @@ void MainWindow::showAboutPage()
 }
 
 
+/*
+    One of the navigation button is clicked
+*/
 void MainWindow::buttonClicked(int pos)
 {
     this->rollOutBottom();
@@ -210,8 +330,6 @@ void MainWindow::buttonClicked(int pos)
     } else {
         this->prevIndicator = this->currIndicator;
     }
-
-
 }
 
 

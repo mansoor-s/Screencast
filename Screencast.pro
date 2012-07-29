@@ -6,6 +6,9 @@
 
 QT       += core gui
 
+CONFIG += qxt
+QXT = core gui
+
 TARGET = Screencast
 TEMPLATE = app
 
@@ -17,10 +20,14 @@ SOURCES += main.cpp\
 
 HEADERS  += MainWindow.h \
     Recorder.h \
-    Countdown.h
+    Countdown.h \
+    RecordInfo.h
 
 FORMS    += MainWindow.ui \
     cowntdown.ui
 
 RESOURCES += \
     icons.qrc
+
+
+libs += l/usr/include/QxtCore

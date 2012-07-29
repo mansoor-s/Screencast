@@ -7,8 +7,14 @@
 #include <QPropertyAnimation>
 #include <QDesktopWidget>
 #include <QSystemTrayIcon>
+#include <QxtGui/QxtGlobalShortcut>
+#include <QFileDialog>
+#include <QDateTime>
+#include <QProcess>
+
 
 #include "Countdown.h"
+#include "Recorder.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +33,17 @@ public:
     void rollOutRight(int width = 950);
     void rollInRight();
     void setindicator(int pos);
+    void show();
+    QString getScreenResolution();
+
+
+
+
+signals:
+    void stopCountdown();
+    void startRecording(RecordInfo);
+    void stopRecording();
+
 
 public slots:
 
@@ -38,6 +55,15 @@ public slots:
     void showAboutPage();
     void toggleRight();
 
+    void sysTrayActivated(QSystemTrayIcon::ActivationReason reason);
+    void countdownFinished();
+
+    void globalShortcutChanged(const QString &shortcut);
+    void globalShortcutActivated();
+
+    void recordingFinished();
+
+    void setOutputDirectory();
     
 private:
     Ui::MainWindow *ui;
@@ -52,6 +78,17 @@ private:
     void buttonClicked(int pos);
 
     QSystemTrayIcon *systrayIcon;
+
+    QxtGlobalShortcut *globalShortcut;
+
+    bool recordingStarted;
+
+    Countdown *countdown;
+
+    Recorder *recorder;
+
+    QString outputFileName;
+    QString outputDirectory;
 };
 
 #endif // MAINWINDOW_H

@@ -25,11 +25,11 @@ Countdown::~Countdown()
     delete ui;
 }
 
-bool Countdown::startCountdown(int seconds)
+void Countdown::startCountdown(int seconds)
 {
     if (seconds == 0) {
         emit countdownFinished();
-        return true;
+        return;
     }
 
     this->ui->timer->setText(QString::number(seconds));
@@ -38,8 +38,6 @@ bool Countdown::startCountdown(int seconds)
     totalTicks = seconds;
     countdownRunning = true;
     timer->start();
-
-
 }
 
 void Countdown::tick()
@@ -47,13 +45,18 @@ void Countdown::tick()
     currTick++;
 
     if (currTick == totalTicks) {
-        countdownRunning = false;
-        timer->stop();
+        stop();
         emit countdownFinished();
-        this->hide();
         return;
     }
 
     this->ui->timer->setText(QString::number(totalTicks - currTick));
+}
 
+void Countdown::stop()
+{
+    this->hide();
+    this->timer->stop();
+    countdownRunning = false;
+    currTick = 0;
 }

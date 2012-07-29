@@ -16,13 +16,14 @@ public:
     Countdown(QWidget *parent = 0);
     ~Countdown();
 
-    bool startCountdown(int seconds = 0);
+    void startCountdown(int seconds = 0);
 
 signals:
     void countdownFinished();
 
 public slots:
     void tick();
+    void stop();
 
 private:
     Ui::Dialog *ui;
