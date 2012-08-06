@@ -37,7 +37,8 @@ public:
         X256,
         AMV,
         H261,
-        MPEG2
+        MPEG4,
+        THEORA
     };
 
 
@@ -51,25 +52,31 @@ public:
     QString filePath;
 
     QString resolution;
+    QString preset = "";
 
     //constructor
     RecordInfo() {
 
     }
 
+
     void setVideoCodec(RecordInfo::VideoCodecs codec) {
         switch(codec) {
         case RecordInfo::X256:
-            videoCodec = "x256";
-
+            videoCodec = "libx256";
+            break;
         case RecordInfo::AMV:
             videoCodec = "amv";
-
+            break;
         case RecordInfo::H261:
             videoCodec = "h261";
-
-        case RecordInfo::MPEG2:
-            videoCodec = "mpeg-2";
+            break;
+        case RecordInfo::MPEG4:
+            videoCodec = "mpeg4";
+            break;
+        case RecordInfo::THEORA:
+            videoCodec = "libtheora";
+            break;
         }
     }
 
@@ -77,32 +84,34 @@ public:
         switch(codec) {
         case RecordInfo::FLAC:
             audioCodec = "flac";
-
+            break;
         case RecordInfo::ALAC:
             audioCodec = "alac";
-
+            break;
         case RecordInfo::MP3:
-            audioCodec = "mp3";
-
+            audioCodec = "libmp3lame";
+            break;
         case RecordInfo::AAC:
             audioCodec = "aac";
+            break;
         }
     }
 
-    void setOutputContainer(RecordInfo::OutputContainers container) {
+    void setOutputContainer(int container) {
 
         switch(container) {
         case RecordInfo::OGG:
             outputContainer = "ogg";
-
+            break;
         case RecordInfo::MKV:
             outputContainer = "mkv";
-
+            break;
         case RecordInfo::AVI:
             outputContainer = "avi";
-
+            break;
         case RecordInfo::MP4:
             outputContainer = "mp4";
+            break;
         }
     }
 
@@ -129,8 +138,17 @@ public:
     }
 
     //return the entire command
-    QString outputCommand() {
-        return "";
+    QString getCommandLineParams() {
+
+        QString output = "-f x11grab -s " + resolution + " -r 30 -i :0 ";
+        output += "-f alsa -ac 2 -ab 192k -i pulse ";
+
+        output += "-acodec libmp3lame -vcodec libx264 -preset ultrafast -threads 0 ";
+
+        output += filePath;
+
+
+        return output;
     }
 
 };

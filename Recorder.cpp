@@ -1,6 +1,6 @@
 #include "Recorder.h"
 
-Recorder::Recorder()
+Recorder::Recorder(QObject *parent) : QObject(parent)
 {
     ffmpeg = new QProcess;
 }
@@ -15,7 +15,10 @@ Recorder::~Recorder()
 
 void Recorder::startRecording(RecordInfo info)
 {
-    QString command = info.outputCommand();
+    QString params = info.getCommandLineParams();
+
+    qDebug() << params;
+    ffmpeg->start("ffmpeg", params.split(" "));
 
 
 }
@@ -23,4 +26,10 @@ void Recorder::startRecording(RecordInfo info)
 void Recorder::stopRecording()
 {
 
+    ffmpeg->terminate();
+
+}
+
+void Recorder::ffmpegFinished()
+{
 }

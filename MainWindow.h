@@ -67,6 +67,10 @@ public slots:
     
 private:
     Ui::MainWindow *ui;
+
+    RecordInfo readUI();
+
+
     int defaultHeight;
     int defaultWidth;
 

@@ -153,7 +153,13 @@ void MainWindow::sysTrayActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::countdownFinished()
 {
     qDebug() << "countdown finished!";
-    //emit startRecording();
+
+
+
+    RecordInfo info = readUI();
+    recorder->startRecording(info);
+
+
 
 }
 
@@ -188,6 +194,32 @@ void MainWindow::setOutputDirectory()
     outputDirectory = QFileDialog::getExistingDirectory(this, "Choose output directory", QDir::homePath(), QFileDialog::ShowDirsOnly);
 
     this->ui->outputDirlabel->setText(outputDirectory);
+}
+
+RecordInfo MainWindow::readUI()
+{
+    RecordInfo info;
+
+    //audio codec
+    info.setAudioCodec((RecordInfo::AudioCodecs) ui->audioCodecCombo->currentIndex());
+
+    //video codec
+    info.setVideoCodec((RecordInfo::VideoCodecs)ui->videoCodecCombo->currentIndex());
+
+    //container
+    info.setOutputContainer(ui->outputContainerCombo->currentIndex());
+
+    //audio source
+
+
+    //filepath
+    info.setOutputFileName(outputDirectory + "/" + outputFileName);
+
+    //screen resolution
+    info.setResolution(getScreenResolution());
+
+    return info;
+
 }
 
 
